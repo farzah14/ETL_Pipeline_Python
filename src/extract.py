@@ -44,11 +44,14 @@ def find_first_csv(dataset_path: Path):
     Returns:
         Path: The path to the CSV file.
         None: If the file path is invalid or does not exist.
+
+    Raises:
+        ValueError: If the file path is invalid or does not exist.
     """
     csv_files = list(dataset_path.glob("*.csv"))
     if not csv_files:
         logger.error("⚠️ No CSV files found in dataset path: %s", dataset_path)
-        return None
+        raise ValueError("No CSV files found in dataset path")
     logger.info("✔ Found CSV file: %s", csv_files[0])
     return csv_files[0]
 
@@ -61,18 +64,24 @@ def extract_data_csv(file_path: Path):
     Returns:
         pd.DataFrame: DataFrame from the CSV file.
         None: If the file path is invalid or does not exist.
+
+    Raises:
+        ValueError: If the file path is invalid or does not exist.
+        FileNotFoundError: If the file path is invalid or does not exist.
+        PermissionError: If the file path is invalid or does not exist.
+        Exception: If the file path is invalid or does not exist.
     """
 
     # Step 1 : Check if the file path is valid and exists
     # Check if the file path is valid
     if file_path.suffix != '.csv':
         logger.error("❌ File path does not end with CSV Formats")
-        return None
+        raise ValueError("Invalid File Format")
 
     # Check if the file exists
     if not file_path.exists():
         logger.error("❌ File path does not exist")
-        return None
+        raise FileNotFoundError("File Path Does Not Exist")
         
     # Step 2 : Extract Data CSV When everything is valid
     try:
@@ -91,17 +100,17 @@ def extract_data_csv(file_path: Path):
     # Error Handling (Checking if the file is empty or not)
     except pd.errors.EmptyDataError:
         logger.error(f"❌ File is empty: {file_path.name}")
-        return None
+        raise
     
     # Error Handling (Checking Permission Denied)
     except PermissionError:
         logger.error(f"❌ Permission Denied for this file: {file_path.name}")
-        return None
+        raise
     
     # Error Handling (Checking another error to read CSV file)
     except Exception as e:
         logger.error(f"❌ Another Error to read CSV file: {str(e)}")
-        return None
+        raise
 
 def extract_get_data(project_root: Path):
     """
@@ -113,6 +122,9 @@ def extract_get_data(project_root: Path):
     Returns:
         pd.DataFrame: DataFrame from the CSV file.
         None: If the file path is invalid or does not exist.
+
+    Raises:
+        FileNotFoundError: If the file path is invalid or does not exist.
     """
     print("="*60)
     print("PHASE 1: EXTRACT CSV FORMATS")
@@ -139,8 +151,7 @@ def extract_get_data(project_root: Path):
         logger.info("✔ EXTRACT AND READ CSV FILES IS SUCCESSFULLY")
         return df
     else:
-        logger.error(f"❌ File {csv_path.name} does not exist or is not valid")
-        return None
+        raise FileNotFoundError("❌ File does not exist or is not valid")
 
 def summary_data(dataframe: pd.DataFrame):
     """
@@ -156,8 +167,7 @@ def summary_data(dataframe: pd.DataFrame):
 
     # Check if Dataframe is None
     if data is None:
-        logger.error("❌ Data is Cannot Summarize")
-        return None
+        return
 
     print("\n")
     print("="*60)
