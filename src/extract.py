@@ -1,7 +1,7 @@
 import pandas as pd
-from pathlib import Path
 import logging
 import kagglehub
+from pathlib import Path
 
 # Get the logger, for checking process on terminal
 logger = logging.getLogger(__name__)
@@ -12,12 +12,12 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"
 )
 
-def download_dataset(dataset:str, output_dir: Path, force_download: bool = False):
+def download_dataset(dataset:str, output_dir: Path, force_download: bool = False) -> pd.DataFrame:
     """Download Dataset From Kaggle to target directory
     
     Args:
         dataset (str): The name of the dataset to download.
-        output_dir (Path | None): The path to the directory where the dataset will be downloaded.
+        output_dir (Path): The path to the directory where the dataset will be downloaded.
         force_download (bool): Whether to force the download of the dataset. When the dataset exists
     
     Returns:
@@ -35,7 +35,7 @@ def download_dataset(dataset:str, output_dir: Path, force_download: bool = False
     logger.info(f"✔ Download Dataset Kaggle is successful")
     return path_dataset
 
-def find_first_csv(dataset_path: Path):
+def find_first_csv(dataset_path: Path) -> pd.DataFrame:
     """Find the first CSV file inside the downloaded dataset directory.
     
     Args:
@@ -55,7 +55,7 @@ def find_first_csv(dataset_path: Path):
     logger.info("✔ Found CSV file: %s", csv_files[0])
     return csv_files[0]
 
-def extract_data_csv(file_path: Path):
+def extract_data_csv(file_path: Path) -> pd.DataFrame:
     """Extract data from CSV file.
     
     Args:
@@ -93,7 +93,6 @@ def extract_data_csv(file_path: Path):
             logger.warning(f"⚠️ UTF-8 decoding failed for {file_path.name}, retrying with ISO-8859-1")
             df = pd.read_csv(file_path, encoding='ISO-8859-1')
         logger.info(f"✔ Read Data from {file_path.name} is successfully")
-
         # Return DataFrame
         return df
 
@@ -112,7 +111,7 @@ def extract_data_csv(file_path: Path):
         logger.error(f"❌ Another Error to read CSV file: {str(e)}")
         raise
 
-def extract_get_data(project_root: Path):
+def extract_get_data(project_root: Path) -> pd.DataFrame:
     """
     Extract all data format from CSV file.
     
@@ -153,7 +152,7 @@ def extract_get_data(project_root: Path):
     else:
         raise FileNotFoundError("❌ File does not exist or is not valid")
 
-def summary_data(dataframe: pd.DataFrame):
+def summary_data(dataframe: pd.DataFrame) -> pd.DataFrame:
     """
     Summary data from DataFrame.
 
@@ -191,6 +190,6 @@ if __name__ == "__main__":
 
     # Final Result From Extract
     result_data = extract_get_data(project_root)
-
+    
     # Function For Summary Data
     summary_data(result_data)
