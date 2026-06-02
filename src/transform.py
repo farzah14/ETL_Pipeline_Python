@@ -3,14 +3,6 @@ import logging
 import pandas as pd
 from pathlib import Path
 
-# Add the root directory to sys.path
-# This allows you to run scripts as modules (e.g., python src/transform.py)
-project_root = Path(__file__).resolve().parent.parent
-if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
-
-from src.extract import extract_get_data
-
 logger = logging.getLogger(__name__)
 
 def fix_data_type(df: pd.DataFrame) -> pd.DataFrame:
@@ -130,7 +122,10 @@ def transform_all(df:pd.DataFrame) -> pd.DataFrame:
     print("="*60)
     df_transform = df.copy()
 
-    # Pipeline Transform Phase
+    if df_transform["Quantity"] < 0 or df_transform["UnitPrice"] < 0:
+        logger.info("Dropping rows with negative quantity and unit price")
+        df_transform = df_transform[(df_transform["Quantity"] > 0) & (df_transform["UnitPrice"] > 0)]
+        
     df_transform = standardization_text(df_transform)
     df_transform = fix_data_type(df_transform)
     df_transform = handling_missing_values(df_transform)
@@ -142,5 +137,13 @@ def transform_all(df:pd.DataFrame) -> pd.DataFrame:
     return df_transform
 
 if __name__ == "__main__":
+    # Add the root directory to sys.path
+# This allows you to run scripts as modules (e.g., python src/transform.py)
+    project_root = Path(__file__).resolve().parent.parent
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+
+    from src.extract import extract_get_data
     df = extract_get_data(project_root)
+    
     df = transform_all(df)
