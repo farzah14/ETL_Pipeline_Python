@@ -51,7 +51,7 @@ def find_first_csv(dataset_path: Path) -> pd.DataFrame:
     csv_files = list(dataset_path.glob("*.csv"))
     if not csv_files:
         logger.error("⚠️ No CSV files found in dataset path: %s", dataset_path)
-        raise ValueError("No CSV files found in dataset path")
+        return None
     logger.info("✔ Found CSV file: %s", csv_files[0])
     return csv_files[0]
 
