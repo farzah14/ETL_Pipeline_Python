@@ -1,8 +1,16 @@
+import os
 import logging
 from src import extract, load, transform
 from pathlib import Path
+from dotenv import load_dotenv
 
-connection_string = "postgresql+psycopg2://postgres:password123$@localhost:5432/ecommerce_db"
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise EnvironmentError(
+        "DATABASE_URL belum di-set. Cek file .env atau environment variables."
+)
 
 # basic config for logger(Only In Orchestrator)
 logging.basicConfig(
@@ -16,7 +24,7 @@ def pipeline_run():
     df_extract = extract.extract_get_data(project_root)
     df_clean = transform.transform_all(df_extract)
     
-    engine = load.db_engine(connection_string)
+    engine = load.db_engine(DATABASE_URL)
     
     load.init_db(engine)
     load.clear_db(engine)

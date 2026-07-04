@@ -1,1 +1,22 @@
 documents/*
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Data Files
+data/
+*.csv
+*.xlsx
+
+# Environment Credentials
+.env
+.env.*
