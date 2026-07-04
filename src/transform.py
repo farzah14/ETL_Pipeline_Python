@@ -32,7 +32,10 @@ def standardization_text(df: pd.DataFrame) -> pd.DataFrame:
     total_whitespace = 0
 
     logger.info("Process Clean Whitespace")
-    for col in df_new.columns:
+
+    # Remove Whitespace
+    text_columns = ["Description", "Country", "StockCode", "InvoiceNo"]
+    for col in text_columns:
         # Check Every COlumns. Non Numerical.
         if df_new[col].dtype == "object":
             # Comparing real values with values after strip()
@@ -122,10 +125,15 @@ def transform_all(df:pd.DataFrame) -> pd.DataFrame:
     print("="*60)
     df_transform = df.copy()
 
-    if df_transform["Quantity"] < 0 or df_transform["UnitPrice"] < 0:
-        logger.info("Dropping rows with negative quantity and unit price")
-        df_transform = df_transform[(df_transform["Quantity"] > 0) & (df_transform["UnitPrice"] > 0)]
-        
+    # Get data better than zero
+    df_transform = df_transform[
+        (df_transform["UnitPrice"] >= 0) & (df_transform["Quantity"] >= 0)
+    ]
+    
+    # Creates Columns TotalPrice
+    df_transform["TotalPrice"] = round(df_transform["UnitPrice"] * df_transform["Quantity"].astype(float),2)
+
+    # Pipeline Transforms Phases
     df_transform = standardization_text(df_transform)
     df_transform = fix_data_type(df_transform)
     df_transform = handling_missing_values(df_transform)

@@ -6,12 +6,6 @@ from pathlib import Path
 # Get the logger, for checking process on terminal
 logger = logging.getLogger(__name__)
 
-# basic config for logger
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"
-)
-
 def download_dataset(dataset:str, output_dir: Path, force_download: bool = False) -> pd.DataFrame:
     """Download Dataset From Kaggle to target directory
     

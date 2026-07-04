@@ -2027,3 +2027,10 @@ Selamat! 🎉 Jika kamu sudah membaca seluruh dokumen ini, kamu sudah mempelajar
 ---
 
 > 📝 **Catatan Akhir:** Dokumen ini adalah bagian dari seri pembelajaran ETL Pipeline. Pastikan kamu juga mempelajari fase Extract dan Transform untuk pemahaman yang lengkap. Selamat belajar! 🚀
+
+## Note : Untuk Phase Loads Untuk Connect/Access Ke Databases Kita Bisa Menggunakan conn.begin() dan juga conn.connect(), Perbedaannya:
+- conn.begin() dia bisa secara otomatis untuk process transactions nya jadi tanpa menggunakan conn.commit() dan conn.rollback(). Dengan kata lain dia bisa otomatis mempermanenkan hasil query sql nya ke databases tertuju/dituju.
+- conn.connect() Untuk bisa memulai phases transactions dia harus mendefinisikan conn.begin(), conn.commit(), dan conn.rollback() secara explisit
+    - conn.begin() -> Untuk memulai phase/process transactions
+    - conn.commit() -> Untuk mempermanenkan hasil dari query di files python ke databases yang dituju
+    - conn.rollback() -> Berfungsi untuk Meng-Cancel semua process di dalam phases transactions jika adanya terjadi errors
