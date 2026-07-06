@@ -18,7 +18,7 @@ logging.basicConfig(
 )
 
 def pipeline_run():
-    project_root = Path(__file__).resolve()
+    project_root = Path(__file__).resolve().parent
 
     df_extract = extract.extract_get_data(project_root)
     # Function For Summary Data
