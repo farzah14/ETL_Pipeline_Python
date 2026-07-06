@@ -6,6 +6,7 @@ from src.transform import transform_all
 from src.extract import extract_data_csv
 
 logger = logging.getLogger(__name__)
+project_root = Path(__file__).resolve().parent.parent
 
 # Create database engine
 def db_engine(connection_str:str):
@@ -143,15 +144,23 @@ def clear_db(engine):
             conn.rollback()
             raise
 
-def load_data(file_path: str, connection_str: str):
-    logger.info(f"Loading data from {file_path}...")
-    
-    df_raw = extract_data_csv(Path(file_path))
-    df = transform_all(df_raw)
+def load_data(connection_str: str):
+    print("="*60)
+    print("PHASE 3: LOADS")
+    print("="*60)
 
+    df_transform = pd.read_csv(
+        project_root/"data"/"processed"/"data_clean.csv"
+    )
+
+    logger.info(f"Loading data...")
     engine = db_engine(connection_str)
     init_db(engine)
     clear_db(engine)
-    load_dimensions(df, engine)
-    load_fact(df, engine)
+    load_dimensions(df_transform, engine)
+    load_fact(df_transform, engine)
     logger.info("Data loaded successfully")
+    
+    print("="*60)
+    print("LOADS IS SUCCESSFULLY")
+    print("="*60)

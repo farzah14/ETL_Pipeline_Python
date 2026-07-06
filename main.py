@@ -28,12 +28,7 @@ def pipeline_run():
     df_clean = transform.transform_all(df_extract)
 
     # Phases Loads
-    engine = load.db_engine(DATABASE_URL)
-    load.init_db(engine) # Initial Schemas Databases
-    load.clear_db(engine) # Refresh Data POSTGREESQL
-    
-    load.load_dimensions(df_clean, engine) # Loading Dimensions Tables
-    load.load_fact(df_clean, engine) # Loading Fact Table
+    load.load_data(DATABASE_URL)
 
 if __name__ == "__main__":
     pipeline_run()

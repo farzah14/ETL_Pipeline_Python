@@ -1,9 +1,9 @@
-import sys
 import logging
 import pandas as pd
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+project_root = Path(__file__).resolve().parent.parent
 
 def fix_data_type(df: pd.DataFrame) -> pd.DataFrame:
     logger.info("PHASE : FIXING DATA TYPE")
@@ -139,19 +139,20 @@ def transform_all(df:pd.DataFrame) -> pd.DataFrame:
     df_transform = handling_missing_values(df_transform)
     df_transform = handling_duplicates(df_transform)
     
+    # Saves file data after transforms to CSV
+    logger.info(f"Save Data Clean to Folders Processed")
+    df_transform.to_csv(
+        project_root/"data"/"processed"/"data_clean.csv", index=False,
+        encoding="utf-8"
+    )
+    logger.info("Saves Is Successfully.....")
+
     print("="*60)
     print("TRANSFORMATION IS SUCCESSFULLY")
     print("="*60)
+    
     return df_transform
 
 if __name__ == "__main__":
-    # Add the root directory to sys.path
-# This allows you to run scripts as modules (e.g., python src/transform.py)
-    project_root = Path(__file__).resolve().parent.parent
-    if str(project_root) not in sys.path:
-        sys.path.insert(0, str(project_root))
-
-    from src.extract import extract_get_data
-    df = extract_get_data(project_root)
-    
-    df = transform_all(df)
+    raw_data_csv = project_root / "data" / "raw"
+    df = transform_all(raw_data_csv)

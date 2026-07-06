@@ -121,7 +121,7 @@ def extract_get_data(project_root: Path) -> pd.DataFrame:
     print("="*60)
     
     # Path to folder data
-    data_dir = project_root / "data"
+    data_dir = project_root / "data" / "raw"
 
     # Check have a files .csv on folder data?.
     csv_path = find_first_csv(data_dir)
@@ -158,8 +158,7 @@ def summary_data(dataframe: pd.DataFrame) -> pd.DataFrame:
     # Check if Dataframe is None
     if data is None:
         return
-
-    print("\n")
+        
     print("="*60)
     print("SUMMARY DATASET")
     print("="*60)
