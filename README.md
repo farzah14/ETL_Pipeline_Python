@@ -195,6 +195,15 @@ python main.py
 ```text
 ETL_Pipeline_Python/
 │
+├── data/                           # Data directory containing raw and processed outputs
+│   ├── processed/                  # Transformed clean CSV data ready for database ingestion
+│   └── raw/                        # Raw CSV transactional data downloaded from Kaggle
+│
+├── documents/                      # Documentation, requirements specifications, and reports
+│   ├── requirements/               # Requirements specifications for load & transform phases
+│   ├── conclusions.md              # Key design and architectural decisions
+│   └── ETL_Pipeline_Documentation.md # Detailed technical documentation
+│
 ├── src/                            # Source code directory
 │   ├── __init__.py                 # Packaged module definitions
 │   ├── extract.py                  # Kaggle ingestion & CSV parsing logic
