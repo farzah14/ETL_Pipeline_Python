@@ -168,7 +168,7 @@ def summary_data(dataframe: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"📊 Dataset Loaded - Rows: {dataframe.shape[0]}, Columns: {dataframe.shape[1]}")
 
     print(f"\n👀 Check Data Types :\n{data.dtypes}")
-
+    
     print("\n📊 Total Missing Values")
     total_missing_values = dataframe.isnull().sum()
     for column, count in total_missing_values.items():

@@ -1,4 +1,4 @@
-documents/*
+documents/
 
 # Virtual Environment
 .venv/
