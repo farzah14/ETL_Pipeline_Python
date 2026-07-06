@@ -20,17 +20,20 @@ logging.basicConfig(
 def pipeline_run():
     project_root = Path(__file__).resolve().parent
 
+    # Phases Extracts And Summary Data(EDA)
     df_extract = extract.extract_get_data(project_root)
-    # Function For Summary Data
     extract.summary_data(df_extract)
+
+    # Phases Transforms
     df_clean = transform.transform_all(df_extract)
-    
+
+    # Phases Loads
     engine = load.db_engine(DATABASE_URL)
+    load.init_db(engine) # Initial Schemas Databases
+    load.clear_db(engine) # Refresh Data POSTGREESQL
     
-    load.init_db(engine)
-    load.clear_db(engine)
-    load.load_dimensions(df_clean, engine)
-    load.load_fact(df_clean, engine) 
+    load.load_dimensions(df_clean, engine) # Loading Dimensions Tables
+    load.load_fact(df_clean, engine) # Loading Fact Table
 
 if __name__ == "__main__":
     pipeline_run()
