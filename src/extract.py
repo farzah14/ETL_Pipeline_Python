@@ -29,18 +29,15 @@ def download_dataset(dataset:str, output_dir: Path, force_download: bool = False
     logger.info(f"✔ Download Dataset Kaggle is successful")
     return path_dataset
 
-def find_first_csv(dataset_path: Path) -> pd.DataFrame:
+def find_first_csv(dataset_path: Path) -> Path | None:
     """Find the first CSV file inside the downloaded dataset directory.
     
     Args:
         dataset_path (Path): The path to the directory where the dataset will be downloaded.
     
     Returns:
-        Path: The path to the CSV file.
-        None: If the file path is invalid or does not exist.
+        Path | None: The path to the CSV file, or None if not found.
 
-    Raises:
-        ValueError: If the file path is invalid or does not exist.
     """
     csv_files = list(dataset_path.glob("*.csv"))
     if not csv_files:
@@ -177,13 +174,3 @@ def summary_data(dataframe: pd.DataFrame) -> pd.DataFrame:
     for column, count in total_missing_values.items():
         if count > 0:
             print(f"Columns '{column}' has {count} missing values.")
-
-if __name__ == "__main__":
-    # Get the project root path (one level above the ‘src’ folder)
-    project_root = Path(__file__).resolve().parent.parent
-
-    # Final Result From Extract
-    result_data = extract_get_data(project_root)
-    
-    # Function For Summary Data
-    summary_data(result_data)

@@ -5,7 +5,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
-
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise EnvironmentError(
@@ -19,9 +18,11 @@ logging.basicConfig(
 )
 
 def pipeline_run():
-    project_root = Path(__file__).resolve().parent.parent
+    project_root = Path(__file__).resolve()
 
     df_extract = extract.extract_get_data(project_root)
+    # Function For Summary Data
+    extract.summary_data(df_extract)
     df_clean = transform.transform_all(df_extract)
     
     engine = load.db_engine(DATABASE_URL)
