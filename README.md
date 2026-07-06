@@ -195,15 +195,6 @@ python main.py
 ```text
 ETL_Pipeline_Python/
 │
-├── documents/                      # Extended technical documentation and designs
-│   ├── requirements/               # Original specifications for stages
-│   │   ├── Requirement_Of_Load.md
-│   │   └── Requirement_Of_Transform.md
-│   ├── implementations_plans/      # Detailed execution blueprints
-│   │   └── implementation_plan.md
-│   ├── ETL_Pipeline_Documentation.md # Detailed technical walkthrough (Indonesian)
-│   └── conclusions.md              # Pipeline summary and potential extensions
-│
 ├── src/                            # Source code directory
 │   ├── __init__.py                 # Packaged module definitions
 │   ├── extract.py                  # Kaggle ingestion & CSV parsing logic
