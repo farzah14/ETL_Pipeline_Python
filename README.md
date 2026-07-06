@@ -199,6 +199,14 @@ ETL_Pipeline_Python/
 │   ├── processed/                  # Transformed clean CSV data ready for database ingestion
 │   └── raw/                        # Raw CSV transactional data downloaded from Kaggle
 │
+<<<<<<< HEAD
+=======
+├── documents/                      # Documentation, requirements specifications, and reports
+│   ├── requirements/               # Requirements specifications for load & transform phases
+│   ├── conclusions.md              # Key design and architectural decisions
+│   └── ETL_Pipeline_Documentation.md # Detailed technical documentation
+│
+>>>>>>> 3113b0e75954d8146a1467c76320e6f532186da7
 ├── src/                            # Source code directory
 │   ├── __init__.py                 # Packaged module definitions
 │   ├── extract.py                  # Kaggle ingestion & CSV parsing logic
