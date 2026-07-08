@@ -8,21 +8,16 @@ project_root = Path(__file__).resolve().parent.parent
 def fix_data_type(df: pd.DataFrame) -> pd.DataFrame:
     logger.info("PHASE : FIXING DATA TYPE")
     try:
-        logger.info("Process Load Dataframe Files")
-        df_new = df.copy()
-        logger.info("Load Successfully")
+        logger.info("Process Fixing Data Type")
+        for col in df.columns:
+            if col == "InvoiceDate":
+                df[col] = pd.to_datetime(df[col], errors="coerce")
+            elif col == "CustomerID":
+                df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
+        logger.info("✅ Fixing Data Type Successfully")
     except TypeError as e:
         logger.error(f"DF failed to load : {e}")
-        raise
-
-    logger.info("Process Fixing Data Type")
-    for col in df_new.columns:
-        if col == "InvoiceDate":
-            df_new[col] = pd.to_datetime(df_new[col], errors="coerce")
-        elif col == "CustomerID":
-            df_new[col] = pd.to_numeric(df_new[col], errors="coerce").astype("Int64")
-    logger.info("✅ Fixing Data Type Successfully")
-    return df_new
+    return df
 
 def standardization_text(df: pd.DataFrame) -> pd.DataFrame:
     logger.info("PHASE : STANDARDIZATION TEXT")
@@ -57,10 +52,9 @@ def standardization_text(df: pd.DataFrame) -> pd.DataFrame:
     return df_new
 
 def handling_missing_values(df: pd.DataFrame) -> pd.DataFrame:
-    df_clean = df.copy()
     logger.info("PHASE : HANDLING MISSING VALUES")
     
-    total_missing_values = df_clean.isnull().sum()
+    total_missing_values = df.isnull().sum()
     cols_with_missing_values = []
 
     for col, total in total_missing_values.items():
@@ -69,26 +63,25 @@ def handling_missing_values(df: pd.DataFrame) -> pd.DataFrame:
             cols_with_missing_values.append(col)
     
     # Drop rows with missing values in the identified columns
-    rows_before = len(df_clean)
+    rows_before = len(df)
 
     # Remove null values in selected columns
     logger.info("Process Remove Null Values")
-    df_clean = df_clean.dropna(subset=cols_with_missing_values)
+    df = df.dropna(subset=cols_with_missing_values)
 
-    rows_after = len(df_clean)
+    rows_after = len(df)
     rows_dropped = rows_before - rows_after
     
     logger.info(f"Drop Missing Values : {rows_dropped} rows")
     logger.info(f"Remaining Rows : {rows_after}")
 
     logger.info(f"✅ Handling Missing Values Complete")
-    return df_clean
+    return df
 
 def handling_duplicates(df: pd.DataFrame) -> pd.DataFrame:
     logger.info("PHASE : HANDLING DUPLICATES")
     
-    df_clean = df.copy()
-    rows_before = len(df_clean)
+    rows_before = len(df)
     
     total_duplicates = df.duplicated().sum()
     # Remove duplicate values
@@ -96,19 +89,19 @@ def handling_duplicates(df: pd.DataFrame) -> pd.DataFrame:
 
     if total_duplicates == 0:
         logger.info("✅ Not Have Duplicate Values")
-        return df_clean
+        return df
 
     logger.info("Process Drop Duplicate Values")
-    df_clean = df_clean.drop_duplicates()
+    df = df.drop_duplicates()
 
-    rows_after = len(df_clean)
+    rows_after = len(df)
     rows_dropped = rows_before - rows_after
     
     logger.info(f"Drop Duplicate Values : {rows_dropped} rows")
     logger.info(f"Remaining Rows : {rows_after}")
     
     logger.info("✅ Handling Duplicates Complete")
-    return df_clean
+    return df
     
 def transform_all(df:pd.DataFrame) -> pd.DataFrame:
     """
@@ -123,25 +116,24 @@ def transform_all(df:pd.DataFrame) -> pd.DataFrame:
     print("="*60)
     print("PHASE 2: TRANSFORMATION")
     print("="*60)
-    df_transform = df.copy()
 
     # Get data better than zero
-    df_transform = df_transform[
-        (df_transform["UnitPrice"] >= 0) & (df_transform["Quantity"] >= 0)
+    df = df[
+        (df["UnitPrice"] >= 0) & (df["Quantity"] >= 0)
     ]
     
     # Creates Columns TotalPrice
-    df_transform["TotalPrice"] = round(df_transform["UnitPrice"] * df_transform["Quantity"].astype(float),2)
+    df["TotalPrice"] = round(df["UnitPrice"] * df["Quantity"].astype(float),2)
 
     # Pipeline Transforms Phases
-    df_transform = standardization_text(df_transform)
-    df_transform = fix_data_type(df_transform)
-    df_transform = handling_missing_values(df_transform)
-    df_transform = handling_duplicates(df_transform)
+    df = standardization_text(df)
+    df = fix_data_type(df)
+    df = handling_missing_values(df)
+    df = handling_duplicates(df)
     
     # Saves file data after transforms to CSV
     logger.info(f"Save Data Clean to Folders Processed")
-    df_transform.to_csv(
+    df.to_csv(
         project_root/"data"/"processed"/"data_clean.csv", index=False,
         encoding="utf-8"
     )
@@ -151,7 +143,7 @@ def transform_all(df:pd.DataFrame) -> pd.DataFrame:
     print("TRANSFORMATION IS SUCCESSFULLY")
     print("="*60)
     
-    return df_transform
+    return df
 
 if __name__ == "__main__":
     raw_data_csv = project_root / "data" / "raw"
