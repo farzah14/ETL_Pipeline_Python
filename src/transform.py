@@ -1,6 +1,7 @@
 import logging
 import pandas as pd
 from pathlib import Path
+from src import extract_data_csv
 
 logger = logging.getLogger(__name__)
 project_root = Path(__file__).resolve().parent.parent
@@ -146,5 +147,11 @@ def transform_all(df:pd.DataFrame) -> pd.DataFrame:
     return df
 
 if __name__ == "__main__":
+    # Path raw data
     raw_data_csv = project_root / "data" / "raw"
-    df = transform_all(raw_data_csv)
+
+    # Search files with format .csv
+    for file in raw_data_csv.glob("*.csv"):
+        print(f"Processing {file}")
+        df = extract_data_csv(file)
+        df = transform_all(df)

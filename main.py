@@ -28,7 +28,7 @@ def pipeline_run():
     df_clean = transform.transform_all(df_extract)
 
     # Phases Loads
-    load.load_data(DATABASE_URL)
+    load.load_data(DATABASE_URL, df_clean)
 
 if __name__ == "__main__":
     pipeline_run()

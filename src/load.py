@@ -105,6 +105,7 @@ def load_fact(df: pd.DataFrame, engine):
     df_clean = df.copy()
     df_clean.columns = df_clean.columns.str.lower()
 
+    # Initalize columns fact_transactions for POSTGREESQL
     fact_transactions = df_clean[
         ["invoiceno", "stockcode", "quantity", "unitprice", "totalprice", "invoicedate", "customerid", "country"]
     ].dropna(subset=["customerid"])
@@ -136,6 +137,7 @@ def clear_db(engine):
         try:
             logger.info("Refresh Data POSTGREESQL")
             conn.execute(
+                # TRUNCATE removes data in table without removes schema
                 text("TRUNCATE TABLE fact_transactions, dim_products, dim_customers CASCADE;")
             )
             conn.commit()
@@ -144,22 +146,18 @@ def clear_db(engine):
             conn.rollback()
             raise
 
-def load_data(connection_str: str):
+def load_data(connection_str: str, df: pd.DataFrame):
     print("="*60)
     print("PHASE 3: LOADS")
     print("="*60)
-
-    df_transform = pd.read_csv(
-        project_root/"data"/"processed"/"data_clean.csv"
-    )
 
     logger.info(f"Loading data...")
     engine = db_engine(connection_str)
     init_db(engine)
     clear_db(engine)
-    load_dimensions(df_transform, engine)
-    load_fact(df_transform, engine)
-    logger.info("Data loaded successfully")
+    load_dimensions(df, engine)
+    load_fact(df, engine)
+    logger.info("Data loaded to POSTGREESQl Is Successfully")
     
     print("="*60)
     print("LOADS IS SUCCESSFULLY")
