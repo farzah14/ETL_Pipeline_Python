@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 from pathlib import Path
-from src import extract_data_csv
+from src.extract import extract_data_csv
 
 logger = logging.getLogger(__name__)
 project_root = Path(__file__).resolve().parent.parent
