@@ -79,13 +79,13 @@ def load_dimensions(df: pd.DataFrame, engine):
             new_products = dim_products[~dim_products["stockcode"].isin(exists_products)]
 
             if not new_customers.empty:
-                new_customers.to_sql("dim_customers", conn, if_exists="append", index=False)
+                new_customers.to_sql("dim_customers", conn, if_exists="append", index=False, chunksize=5000)
                 logger.info(f"Loaded {len(new_customers)} new customers")
             else:
                 logger.info("No new customers to load")
 
             if not new_products.empty:
-                new_products.to_sql("dim_products", conn, if_exists="append", index=False)
+                new_products.to_sql("dim_products", conn, if_exists="append", index=False, chunksize=5000)
                 logger.info(f"Loaded {len(new_products)} new products")
             else:
                 logger.info("No new products to load")
@@ -119,7 +119,7 @@ def load_fact(df: pd.DataFrame, engine):
             new_sales = fact_transactions[[t not in exists_sales for t in sales_tuples]]
 
             if not new_sales.empty:
-                new_sales.to_sql("fact_transactions", conn, if_exists="append", index=False)
+                new_sales.to_sql("fact_transactions", conn, if_exists="append", index=False, chunksize=5000)
                 logger.info(f"Loaded {len(new_sales)} new sales")
             else:
                 logger.info("No new sales to load")
