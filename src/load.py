@@ -69,27 +69,35 @@ def load_dimensions(df: pd.DataFrame, engine):
     with engine.connect() as conn:
         conn.begin() #Start Transactions
         try:
-            # Adding New Customers To Databases POSTGREESQL
+            """Adding New Customers To Databases POSTGREESQL"""
+            # Get All CustomersData On POSTGREESQL Become TUPLES Formats
             exists_customers_raw = conn.execute(text("SELECT customerid FROM dim_customers")).fetchall()
+            # Get Only ID Customers From TUPLES Data
             exists_customers = {row[0] for row in exists_customers_raw}
+            # New Data Customers Not Same In Exists Data Customers By ID
             new_customers = dim_customers[~dim_customers["customerid"].isin(exists_customers)]
+            # Add New Customers To POSTGREESQL
             if not new_customers.empty:
                 new_customers.to_sql("dim_customers", conn, if_exists="append", index=False, chunksize=5000)
                 logger.info(f"Loaded {len(new_customers)} new customers")
             else:
                 logger.info("No new customers to load")
 
-            # Adding New Products To Databases POSTGREESQL
+            """Adding New Products To Databases POSTGREESQL"""
+            # Get All ProductsData On POSTGREESQL Become TUPLES Formats
             exists_products_raw = conn.execute(text("SELECT stockcode FROM dim_products")).fetchall()
+            # Get Only ID Product/StockCodes From TUPLES Data
             exists_products = {row[0] for row in exists_products_raw}
+            # New Data Products Not Same In Exists Data Products By StockCode
             new_products = dim_products[~dim_products["stockcode"].isin(exists_products)]
+            # Add New Products To POSTGREESQL
             if not new_products.empty:
                 new_products.to_sql("dim_products", conn, if_exists="append", index=False, chunksize=5000)
                 logger.info(f"Loaded {len(new_products)} new products")
             else:
                 logger.info("No new products to load")
                 
-            conn.commit()
+            conn.commit() # Accept Permantely Transactions
         except Exception as e:
             logger.info(f"Load Dimensions Table Failed : {e}")
             conn.rollback()
@@ -112,17 +120,22 @@ def load_fact(df: pd.DataFrame, engine):
     with engine.connect() as conn:
         conn.begin()
         try:
+            """Adding New Transactions/Sales Data To Databases POSTGREESQL"""
+            # Get All Sales/TransactionsData On POSTGREESQL Become Tuples Formats
             exists_sales_raw = conn.execute(text("SELECT invoiceno, stockcode FROM fact_transactions")).fetchall()
+            # Get Only ID Sales/Transactions From TUPLES Data
             exists_sales = {(str(row[0]), str(row[1])) for row in exists_sales_raw}
-            
+            # New Data Sales/Transactions Not Same In Exists Data Sales/Transactions By StockCode
             sales_tuples = list(zip(fact_transactions["invoiceno"].astype(str), fact_transactions["stockcode"].astype(str)))
+            # Filter New Sales/Transactions Data
             new_sales = fact_transactions[[t not in exists_sales for t in sales_tuples]]
-
+            # Add New Sales/Transactions Data To POSTGREESQL
             if not new_sales.empty:
                 new_sales.to_sql("fact_transactions", conn, if_exists="append", index=False, chunksize=5000)
                 logger.info(f"Loaded {len(new_sales)} new sales")
             else:
                 logger.info("No new sales to load")
+                
             conn.commit()
         except Exception as e:
             logger.info(f"Load Facts Table Failed : {e}")
