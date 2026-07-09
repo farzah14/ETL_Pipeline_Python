@@ -59,11 +59,11 @@ def load_dimensions(df: pd.DataFrame, engine):
     df_clean = df.copy()
     df_clean.columns = df_clean.columns.str.lower()
 
-    # Extract unique customers
+    # Extract Unique Columns Of Customers
     dim_customers = df_clean[["customerid", "country"]].dropna(subset=["customerid"]).drop_duplicates(subset=["customerid"])
     dim_customers["customerid"] = dim_customers["customerid"].astype(int)
 
-    # Extract unique products
+    # Extract Unique Columns Of Products
     dim_products = df_clean[["stockcode", "description"]].dropna(subset=["stockcode"]).drop_duplicates(subset=["stockcode"])
 
     with engine.connect() as conn:
@@ -71,24 +71,22 @@ def load_dimensions(df: pd.DataFrame, engine):
         try:
             exists_customers_raw = conn.execute(text("SELECT customerid FROM dim_customers")).fetchall()
             exists_customers = {row[0] for row in exists_customers_raw}
-
-            exists_products_raw = conn.execute(text("SELECT stockcode FROM dim_products")).fetchall()
-            exists_products = {row[0] for row in exists_products_raw}
-
             new_customers = dim_customers[~dim_customers["customerid"].isin(exists_customers)]
-            new_products = dim_products[~dim_products["stockcode"].isin(exists_products)]
-
             if not new_customers.empty:
                 new_customers.to_sql("dim_customers", conn, if_exists="append", index=False, chunksize=5000)
                 logger.info(f"Loaded {len(new_customers)} new customers")
             else:
                 logger.info("No new customers to load")
 
+            exists_products_raw = conn.execute(text("SELECT stockcode FROM dim_products")).fetchall()
+            exists_products = {row[0] for row in exists_products_raw}
+            new_products = dim_products[~dim_products["stockcode"].isin(exists_products)]
             if not new_products.empty:
                 new_products.to_sql("dim_products", conn, if_exists="append", index=False, chunksize=5000)
                 logger.info(f"Loaded {len(new_products)} new products")
             else:
                 logger.info("No new products to load")
+                
             conn.commit()
         except Exception as e:
             logger.info(f"Load Dimensions Table Failed : {e}")
