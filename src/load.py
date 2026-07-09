@@ -69,6 +69,7 @@ def load_dimensions(df: pd.DataFrame, engine):
     with engine.connect() as conn:
         conn.begin() #Start Transactions
         try:
+            # Adding New Customers To Databases POSTGREESQL
             exists_customers_raw = conn.execute(text("SELECT customerid FROM dim_customers")).fetchall()
             exists_customers = {row[0] for row in exists_customers_raw}
             new_customers = dim_customers[~dim_customers["customerid"].isin(exists_customers)]
@@ -78,6 +79,7 @@ def load_dimensions(df: pd.DataFrame, engine):
             else:
                 logger.info("No new customers to load")
 
+            # Adding New Products To Databases POSTGREESQL
             exists_products_raw = conn.execute(text("SELECT stockcode FROM dim_products")).fetchall()
             exists_products = {row[0] for row in exists_products_raw}
             new_products = dim_products[~dim_products["stockcode"].isin(exists_products)]
